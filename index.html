@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GD Goenka | Enrollment Portal</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* Student details toolbar alignment */
+    .detail-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .detail-actions-group {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-left: auto;
+    }
+
+    .detail-actions-group button {
+      margin: 0;
+    }
+
+    @media (max-width: 600px) {
+      .detail-toolbar {
+        gap: 12px;
+      }
+
+      .detail-actions-group {
+        margin-left: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SPLASH SCREEN -->
+  <section id="splash" class="splash-screen">
+    <div class="splash-content">
+      <div class="splash-logo">G</div>
+      <p class="university-name">GD GOENKA UNIVERSITY</p>
+      <h1>Enrollment Number <span>Generator</span></h1>
+      <p class="splash-subtitle">PRECISION • IDENTITY • EXCELLENCE</p>
+      <div class="loading-track"><div class="loading-progress"></div></div>
+      <p class="loading-text">INITIALIZING PORTAL...</p>
+    </div>
+  </section>
+
+  <!-- ROLE SELECTION -->
+  <section id="main" class="screen main-screen hidden">
+    <div class="main-card">
+      <div class="brand-mark">G</div>
+      <p class="eyebrow">GD GOENKA UNIVERSITY</p>
+      <h1>Welcome <span>Back.</span></h1>
+      <p class="muted">Select your portal to continue.</p>
+
+      <div class="role-list">
+        <button class="role-card" onclick="selectRole('admin')">
+          <span class="role-symbol">♙</span>
+          <span class="role-copy">
+            <strong>Admin Portal</strong>
+            <small>Manage student enrollment records</small>
+          </span>
+          <span class="role-arrow">→</span>
+        </button>
+
+        <button class="role-card" onclick="selectRole('student')">
+          <span class="role-symbol">▣</span>
+          <span class="role-copy">
+            <strong>Student Portal</strong>
+            <small>Register or find your enrollment number</small>
+          </span>
+          <span class="role-arrow">→</span>
+        </button>
+      </div>
+
+      <p class="bottom-note">PRECISION • IDENTITY • EXCELLENCE</p>
+    </div>
+  </section>
+
+  <!-- STUDENT PORTAL -->
+  <section id="studentScreen" class="screen hidden">
+    <div class="portal-container">
+      <button class="back-button" onclick="goBackToRoles()">← Back</button>
+
+      <div class="page-heading">
+        <p class="eyebrow">STUDENT PORTAL</p>
+        <h1>How can we <span>help you?</span></h1>
+        <p class="muted">Choose an option to continue.</p>
+      </div>
+
+      <div class="action-list">
+        <button class="action-card" onclick="openRegistration()">
+          <span class="action-symbol">＋</span>
+          <span class="role-copy">
+            <strong>Create a New Enrollment Number</strong>
+            <small>Register as a new student</small>
+          </span>
+          <span class="role-arrow">→</span>
+        </button>
+
+        <button class="action-card" onclick="openFindPage()">
+          <span class="action-symbol">⌕</span>
+          <span class="role-copy">
+            <strong>Find My Enroll</strong>
+            <small>Retrieve your existing enrollment number</small>
+          </span>
+          <span class="role-arrow">→</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- REGISTRATION PAGE -->
+  <section id="registrationScreen" class="screen hidden">
+    <div class="form-container">
+      <button class="back-button" onclick="backToStudentPortal()">← Back to student portal</button>
+
+      <div class="page-heading">
+        <p class="eyebrow">NEW STUDENT REGISTRATION</p>
+        <h1>Begin your <span>journey.</span></h1>
+        <p class="muted">Enter your details to generate your enrollment number.</p>
+      </div>
+
+      <form id="registrationForm" class="form-card">
+        <div class="form-grid">
+          <div class="field">
+            <label for="regName">FULL NAME</label>
+            <input id="regName" type="text" placeholder="Enter your full name" required maxlength="100">
+          </div>
+
+          <div class="field">
+            <label for="regEmail">EMAIL ADDRESS</label>
+            <input id="regEmail" type="email" placeholder="Enter your email address" required>
+          </div>
+
+          <div class="field">
+            <label for="regPhone">PHONE NUMBER</label>
+            <input id="regPhone" type="tel" inputmode="numeric" placeholder="Enter phone number" required>
+          </div>
+
+          <div class="field">
+            <label for="regCourse">COURSE</label>
+            <select id="regCourse" required>
+              <option value="">Select your course</option>
+            </select>
+          </div>
+
+          <div class="field full-width">
+            <label for="regYear">ACADEMIC YEAR</label>
+            <select id="regYear" required>
+              <option value="">Select academic year</option>
+            </select>
+          </div>
+        </div>
+
+        <p id="registrationMessage" class="message" aria-live="polite"></p>
+
+        <button type="submit" class="primary-button">
+          Generate Enrollment Number <span>→</span>
+        </button>
+
+        <p class="form-hint">Please verify your details before submitting.</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- REGISTRATION SUCCESS PAGE -->
+  <section id="successScreen" class="screen hidden">
+    <div class="success-card">
+      <div class="success-icon">✓</div>
+      <p class="eyebrow">REGISTRATION SUCCESSFUL</p>
+      <h1>You're officially <span>enrolled!</span></h1>
+      <p class="muted">Your enrollment number has been generated successfully.</p>
+
+      <div class="generated-number-card">
+        <span>YOUR ENROLLMENT NUMBER</span>
+        <strong id="generatedEnrollment"></strong>
+        <button type="button" class="copy-button" id="copyEnrollment">Copy Number</button>
+      </div>
+
+      <p id="copyMessage" class="message"></p>
+
+      <div class="success-buttons">
+        <button class="primary-button" onclick="returnToStudentPortal()">Continue</button>
+        <button class="secondary-button" onclick="printEnrollment()">Print Confirmation</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FIND MY ENROLL PAGE -->
+  <section id="findScreen" class="screen hidden">
+    <div class="form-container find-container">
+      <button class="back-button" onclick="backToStudentPortal()">← Back</button>
+
+      <div class="page-heading">
+        <p class="eyebrow">STUDENT PORTAL</p>
+        <h1>Find My <span>Enrollment.</span></h1>
+        <p class="muted">Enter your registered details to retrieve your enrollment number.</p>
+      </div>
+
+      <div class="form-card find-card">
+        <form id="findStudentForm">
+          <div class="form-grid single-column">
+            <div class="field">
+              <label for="findPhoneInput">PHONE NUMBER</label>
+              <input id="findPhoneInput" type="tel" inputmode="numeric" placeholder="Enter registered phone number" required>
+            </div>
+
+            <div class="field">
+              <label for="findEmailInput">EMAIL ADDRESS</label>
+              <input id="findEmailInput" type="email" placeholder="Enter registered email address" required>
+            </div>
+          </div>
+
+          <p id="findMessage" class="message" aria-live="polite"></p>
+
+          <button type="submit" class="primary-button">
+            Find Enrollment Number <span>→</span>
+          </button>
+        </form>
+
+        <div id="findResult" class="lookup-result"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADMIN LOGIN -->
+  <section id="adminLogin" class="screen hidden">
+    <div class="login-card">
+      <button class="back-button" onclick="goBackToRoles()">← Back</button>
+
+      <div class="login-logo">G</div>
+      <p class="eyebrow">ADMINISTRATOR PORTAL</p>
+      <h1>Admin <span>Login.</span></h1>
+      <p class="muted">Sign in to manage student records.</p>
+
+      <form id="adminLoginForm">
+        <div class="field">
+          <label for="username">USERNAME</label>
+          <input id="username" type="text" placeholder="Enter username" autocomplete="username" required>
+        </div>
+
+        <div class="field">
+          <label for="password">PASSWORD</label>
+          <div class="password-wrapper">
+            <input id="password" type="password" placeholder="Enter password" autocomplete="current-password" required>
+            <button type="button" id="passwordToggle" class="password-toggle">Show</button>
+          </div>
+        </div>
+
+        <p id="loginMessage" class="message"></p>
+        <button type="submit" class="primary-button">Sign In <span>→</span></button>
+      </form>
+
+      <p class="bottom-note">SECURE ADMINISTRATOR ACCESS</p>
+    </div>
+  </section>
+
+  <!-- ADMIN DASHBOARD -->
+  <section id="adminDashboard" class="screen hidden">
+    <header class="dashboard-header">
+      <div class="dashboard-brand">
+        <div class="brand-mark small-mark">G</div>
+        <div>
+          <strong>Enrollment Portal</strong>
+          <small>GD Goenka University</small>
+        </div>
+      </div>
+      <button class="logout-button" onclick="logoutAdmin()">Logout ↗</button>
+    </header>
+
+    <main class="dashboard-content">
+      <div class="dashboard-title">
+        <p class="eyebrow">ADMINISTRATION</p>
+        <h1>Student <span>Records.</span></h1>
+        <p class="muted">View and manage university enrollment information.</p>
+      </div>
+
+      <div class="summary-card">
+        <div>
+          <span class="summary-label">TOTAL STUDENTS</span>
+          <strong id="totalStudents">0</strong>
+        </div>
+        <div class="summary-icon">♙</div>
+      </div>
+
+      <!-- COURSE AND YEAR SETTINGS -->
+      <section class="dashboard-section">
+        <div class="section-heading">
+          <p class="eyebrow">FORM CONFIGURATION</p>
+          <h2>Enrollment Form Settings</h2>
+          <p class="muted">Manage the courses and academic years available during registration.</p>
+        </div>
+
+        <div class="management-grid">
+          <div class="management-card">
+            <h3>Manage Courses</h3>
+            <form id="courseForm" class="inline-form">
+              <input id="newCourse" placeholder="Enter course name" required maxlength="100">
+              <button type="submit">＋ Add</button>
+            </form>
+            <div id="courseList" class="manage-list"></div>
+          </div>
+
+          <div class="management-card">
+            <h3>Manage Academic Years</h3>
+            <form id="yearForm" class="inline-form">
+              <input id="newYear" placeholder="e.g. 2026-2027" required maxlength="30">
+              <button type="submit">＋ Add</button>
+            </form>
+            <div id="yearList" class="manage-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ADMIN CREDENTIALS -->
+      <section class="dashboard-section">
+        <div class="section-heading">
+          <p class="eyebrow">ACCOUNT SECURITY</p>
+          <h2>Admin Login Credentials</h2>
+          <p class="muted">Change the username and password used to access this dashboard.</p>
+        </div>
+
+        <form id="credentialsForm" class="management-card credential-card">
+          <div class="form-grid">
+            <div class="field full-width">
+              <label for="currentAdminPassword">CURRENT PASSWORD</label>
+              <input id="currentAdminPassword" type="password" placeholder="Enter current password" required>
+            </div>
+
+            <div class="field">
+              <label for="newAdminUsername">NEW USERNAME</label>
+              <input id="newAdminUsername" type="text" placeholder="New username" maxlength="40" required>
+            </div>
+
+            <div class="field">
+              <label for="newAdminPassword">NEW PASSWORD</label>
+              <input id="newAdminPassword" type="password" placeholder="Minimum 8 characters" minlength="8" required>
+            </div>
+
+            <div class="field full-width">
+              <label for="confirmAdminPassword">CONFIRM NEW PASSWORD</label>
+              <input id="confirmAdminPassword" type="password" placeholder="Confirm new password" minlength="8" required>
+            </div>
+          </div>
+
+          <p id="credentialsMessage" class="message"></p>
+          <button type="submit" class="primary-button">Update Login Credentials <span>→</span></button>
+          <p class="form-hint">Credentials are stored in this browser for this demo.</p>
+        </form>
+      </section>
+
+      <!-- STUDENT RECORDS -->
+      <section class="dashboard-section records-section">
+        <div class="records-toolbar">
+          <div class="search-box">
+            <span>⌕</span>
+            <input id="studentSearch" type="search" placeholder="Search name or enrollment number...">
+          </div>
+          <button id="filterToggle" class="secondary-button">☷ Filters</button>
+        </div>
+
+        <div id="filterPanel" class="filter-panel hidden">
+          <div class="field">
+            <label for="yearFilter">ACADEMIC YEAR</label>
+            <select id="yearFilter">
+              <option value="">All Academic Years</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="courseFilter">COURSE</label>
+            <select id="courseFilter">
+              <option value="">All Courses</option>
+            </select>
+          </div>
+
+          <button id="clearFilters" class="text-button" type="button">Clear filters</button>
+        </div>
+
+        <div class="records-heading">
+          <div>
+            <h2>All Students</h2>
+            <p class="muted">Student name and enrollment number</p>
+          </div>
+          <span id="recordCount" class="record-count">0 records</span>
+        </div>
+
+        <div id="studentList" class="student-list"></div>
+
+        <div id="emptyState" class="empty-state hidden">
+          <h3>No students found</h3>
+          <p>There are no matching student records.</p>
+        </div>
+      </section>
+
+      <!-- STUDENT DETAILS -->
+      <section id="studentDetail" class="dashboard-section detail-section hidden">
+
+        <div class="detail-toolbar">
+          <button class="back-button" onclick="closeStudentDetails()">← Back to students</button>
+
+          <div class="detail-actions-group">
+            <button id="editStudentButton" class="secondary-button" onclick="enableStudentEdit()">✎ Edit Details</button>
+          </div>
+        </div>
+
+        <div class="profile-heading">
+          <div id="detailAvatar" class="profile-avatar">S</div>
+          <div>
+            <p class="eyebrow">STUDENT PROFILE</p>
+            <h2 id="detailName">Student Name</h2>
+            <p id="detailEnrollment" class="profile-enrollment"></p>
+          </div>
+        </div>
+
+        <div class="management-card">
+          <h3>Personal Information</h3>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="detailFullName">FULL NAME</label>
+              <input id="detailFullName" disabled>
+            </div>
+
+            <div class="field">
+              <label for="detailEnrollmentInput">ENROLLMENT NUMBER</label>
+              <input id="detailEnrollmentInput" disabled>
+            </div>
+
+            <div class="field">
+              <label for="detailPhone">PHONE NUMBER</label>
+              <input id="detailPhone" disabled>
+            </div>
+
+            <div class="field">
+              <label for="detailEmail">EMAIL ADDRESS</label>
+              <input id="detailEmail" disabled>
+            </div>
+
+            <div class="field">
+              <label for="detailDob">DATE OF BIRTH</label>
+              <input id="detailDob" type="date" disabled>
+            </div>
+
+            <div class="field">
+              <label for="detailGender">GENDER</label>
+              <select id="detailGender" disabled>
+                <option value="">Not specified</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="detailCourse">COURSE</label>
+              <select id="detailCourse" disabled></select>
+            </div>
+
+            <div class="field">
+              <label for="detailYear">ACADEMIC YEAR</label>
+              <select id="detailYear" disabled></select>
+            </div>
+
+            <!-- Hidden for JavaScript compatibility; not displayed in profile -->
+            <div class="field" style="display: none !important;">
+              <label for="detailAddress">ADDRESS</label>
+              <textarea id="detailAddress" rows="3" disabled></textarea>
+            </div>
+          </div>
+
+          <p id="editMessage" class="message"></p>
+
+          <div id="editActions" class="edit-actions hidden">
+            <button class="secondary-button" onclick="cancelStudentEdit()">Cancel</button>
+            <button class="primary-button" onclick="saveStudentEdit()">Save Changes</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
