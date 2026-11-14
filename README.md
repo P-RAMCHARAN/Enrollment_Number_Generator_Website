@@ -57,6 +57,17 @@ Do not enter real personal information.
 - Unique enrollment number generation across users
 - Improved data security
 
+## Screenshots
+
+### Homepage
+![Homepage](Screenshots/homepage.png)
+
+### Student Registration
+![Student Registration](Screenshots/StudentRegistration.png)
+
+### Admin Dashboard
+![Admin Dashboard](Screenshots/AdminDashboard.png)
+
 ## Developer
 
 P. Ram Charan
